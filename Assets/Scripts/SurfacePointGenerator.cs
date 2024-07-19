@@ -21,6 +21,11 @@ public partial class SurfacePointGenerator : MonoBehaviour, ISurfacePointProvide
         return surfacePoints;
     }
 
+    public SurfacePoint GetRandomSurfacePoint()
+    {
+        return surfacePoints[Random.Range(0, surfacePoints.Count)];
+    }
+
     public void FixBoundsSize()
     {
         Vector3 originalSize = generationBounds.size;
@@ -123,7 +128,7 @@ public partial class SurfacePointGenerator : MonoBehaviour, ISurfacePointProvide
         Gizmos.color = Color.cyan;
         foreach (SurfacePoint surfacePoint in surfacePoints)
         {
-            Gizmos.DrawRay(surfacePoint.positionWS, 0.1f * surfacePoint.normalWS);
+            Gizmos.DrawRay(surfacePoint.positionWS, 0.15f * surfacePoint.normalWS);
         }
     }
 

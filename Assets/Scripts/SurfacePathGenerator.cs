@@ -1,45 +1,66 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class SurfacePathGenerator: MonoBehaviour
 {
-    public ISurfacePointProvider SurfacePointProvider;
     public int maxPathCount;
     public float maxPathDistance;
     public int maxTriesPerPoint;
+    public List<SurfacePath> SurfacePaths = new();
+    
+    private ISurfacePointProvider surfacePointProvider;
 
-    [SerializeField]
-    public List<SurfacePath> SurfacePaths;
+    private bool CheckSurfacePointVisibility(SurfacePoint origin, SurfacePoint destination, float maxDistance)
+    {
+        bool hit = Physics.Raycast(origin.positionWS,  (destination.positionWS - origin.positionWS).normalized, out RaycastHit hitInfo, maxDistance);
+        if (hit)
+        {
+            return Math.Abs(hitInfo.distance - origin.GetDistanceTo(destination)) < Single.Epsilon * 10f;
+        }
 
-
-    private void GeneratePathsFromPoint(SurfacePoint point)
+        return false;
+    }
+    
+    private void GeneratePathsFromPoint(SurfacePoint originPoint)
     {
         float pathDistance = 0f;
         int tries = 0;
+        List<SurfacePoint> surfacePathPoints = new()
+        {
+            originPoint
+        };
+        
         while (tries < maxTriesPerPoint)
         {
-            //get another point
-            //check visibility (continue with invisible)
-            //check pathdistance+
-            //if valid distance:
-            //  add pathdistance+
-            //  calculate and add term
-            //  calculatetime delay
+            SurfacePoint nextPoint = surfacePointProvider.GetRandomSurfacePoint();
+            bool visible = CheckSurfacePointVisibility(originPoint, nextPoint ,maxPathDistance - pathDistance);
+            if (!visible)
+            {
+                continue;
+            }
             
+            surfacePathPoints.Add(nextPoint);
+            pathDistance += surfacePathPoints[^2].GetDistanceTo(surfacePathPoints[^1]);
+            
+            SurfacePaths.Add(new SurfacePath()
+            {
+                SurfacePoints = surfacePathPoints
+            });
             
             tries++;
         }
+        
     }
 
     public void GenerateSurfacePaths()
     {
-        SurfacePointProvider = GetComponent<SurfacePointGenerator>();
-        List<SurfacePoint> points = SurfacePointProvider.GetSurfacePoints();
-        for (int i = 0; i < points.Count; i++)
+        surfacePointProvider = GetComponent<SurfacePointGenerator>();
+        List<SurfacePoint> points = surfacePointProvider.GetSurfacePoints();
+        foreach (SurfacePoint t in points)
         {
-            GeneratePathsFromPoint(points[i]);
+            GeneratePathsFromPoint(t);
         }
     }
 }
