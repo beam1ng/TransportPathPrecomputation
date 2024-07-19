@@ -6,3 +6,6 @@ The aim of this Unity project is to implement a technique for realtime reverb au
 
 ### Surface Points Generation  ###
 ![image](https://github.com/user-attachments/assets/4ef7ef82-eee7-40cd-89be-c98ff382b8ae)
+
+### Sound propagation transport paths precomputation. ###
+![image](https://github.com/user-attachments/assets/bfa814a1-c519-437d-8671-d85a89ae4057)
