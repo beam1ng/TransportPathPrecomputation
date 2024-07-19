@@ -103,8 +103,9 @@ public class SurfacePathGenerator: MonoBehaviour
     {
         if (Time.time >= nextSelectionTime)
         {
+            int newPathIndex = Random.Range(0, SurfacePaths.Count / 10);
             currentPath = SurfacePaths.OrderByDescending(s => s.surfacePoints.Count)
-                .ElementAtOrDefault(Random.Range(0, SurfacePaths.Count / 100));
+                .ElementAtOrDefault(newPathIndex);
             nextSelectionTime = Time.time + pathSelectionInterval;
         }
         
