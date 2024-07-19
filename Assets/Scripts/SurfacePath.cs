@@ -1,16 +1,21 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
 
+[Serializable]
 public struct SurfacePath
 {
-    public List<SurfacePoint> SurfacePoints;
-    public float TimeDelay;
-    public float[] Contributions;
+    [SerializeField]
+    public List<SurfacePoint> surfacePoints;
+    public float timeDelay;
+    public float[] contributions;
 
     public SurfacePath(List<SurfacePoint> surfacePoints, List<float> sampleFrequencies)
     {
-        this.SurfacePoints = surfacePoints;
-        this.TimeDelay = CalculateTimeDelay(SurfacePoints);
-        this.Contributions = CalculateContributions(surfacePoints, sampleFrequencies);
+        this.surfacePoints = surfacePoints;
+        this.timeDelay = CalculateTimeDelay(this.surfacePoints);
+        this.contributions = CalculateContributions(surfacePoints, sampleFrequencies);
     }
 
     private static float CalculateTimeDelay(List<SurfacePoint> surfacePoints)
