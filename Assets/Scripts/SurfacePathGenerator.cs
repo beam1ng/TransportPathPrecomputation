@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,6 +9,12 @@ public class SurfacePathGenerator: MonoBehaviour
     public int maxPathCount;
     public float maxPathDistance;
     public int maxTriesPerPoint;
+
+    public List<float> sampleFrequencies =new ()
+    {
+        50f, 250f,450f,700f,1000f,1370f,1850f,2500f,3400f,4800f,7000f,10500f
+    };
+    
     public List<SurfacePath> SurfacePaths = new();
     
     private ISurfacePointProvider surfacePointProvider;
@@ -44,14 +51,16 @@ public class SurfacePathGenerator: MonoBehaviour
             surfacePathPoints.Add(nextPoint);
             pathDistance += surfacePathPoints[^2].GetDistanceTo(surfacePathPoints[^1]);
             
-            SurfacePaths.Add(new SurfacePath()
-            {
-                SurfacePoints = surfacePathPoints
-            });
+            SurfacePaths.Add(new SurfacePath(surfacePathPoints,sampleFrequencies));
             
             tries++;
         }
         
+    }
+
+    private void ApplyPathCountLimit()
+    {
+        SurfacePaths = SurfacePaths.OrderBy(_ => Guid.NewGuid()).Take(maxPathCount).ToList();
     }
 
     public void GenerateSurfacePaths()
@@ -62,6 +71,8 @@ public class SurfacePathGenerator: MonoBehaviour
         {
             GeneratePathsFromPoint(t);
         }
+
+        ApplyPathCountLimit();
     }
 }
 
