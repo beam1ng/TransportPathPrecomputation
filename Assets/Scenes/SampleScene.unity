@@ -108620,6 +108620,7 @@ MonoBehaviour:
     - 1
     - 1
     - 1
+  drawPaths: 0
   pathSelectionInterval: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

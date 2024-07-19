@@ -19,6 +19,7 @@ public class SurfacePathGenerator: MonoBehaviour
     
     [SerializeField]
     public List<SurfacePath> SurfacePaths = new();
+    public bool drawPaths;
     public float pathSelectionInterval = 1f;
     
     private ISurfacePointProvider surfacePointProvider;
@@ -101,42 +102,22 @@ public class SurfacePathGenerator: MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (Time.time >= nextSelectionTime)
+        if (drawPaths)
         {
-            int newPathIndex = Random.Range(0, SurfacePaths.Count / 10);
-            currentPath = SurfacePaths.OrderByDescending(s => s.surfacePoints.Count)
-                .ElementAtOrDefault(newPathIndex);
-            nextSelectionTime = Time.time + pathSelectionInterval;
+            if (Time.time >= nextSelectionTime)
+            {
+                int newPathIndex = Random.Range(0, SurfacePaths.Count / 10);
+                currentPath = SurfacePaths.OrderByDescending(s => s.surfacePoints.Count)
+                    .ElementAtOrDefault(newPathIndex);
+                nextSelectionTime = Time.time + pathSelectionInterval;
+            }
+            
+            Gizmos.color = Color.magenta;
+            for (int i = 0; i < currentPath.surfacePoints.Count - 1; i++)
+            {
+                Gizmos.DrawLine(currentPath.surfacePoints[i].positionWS, currentPath.surfacePoints[i + 1].positionWS);
+            }
         }
-        
-        Gizmos.color = Color.magenta;
-        for (int i = 0; i < currentPath.surfacePoints.Count - 1; i++)
-        {
-            Gizmos.DrawLine(currentPath.surfacePoints[i].positionWS, currentPath.surfacePoints[i + 1].positionWS);
-        }
-        
-        // //DEBUG
-        // float rayLength = 5f;
-        // Vector3 rayOffset = new Vector3(0, -0.05f, 0); 
-        //
-        // UnityEditor.SceneView sceneView = UnityEditor.SceneView.lastActiveSceneView;
-        // if (sceneView != null && sceneView.camera != null)
-        // {
-        //     Vector3 start = sceneView.camera.transform.position + sceneView.camera.transform.TransformDirection(rayOffset);
-        //     Vector3 direction = sceneView.camera.transform.forward;
-        //     Vector3 end = start + direction * rayLength;
-        //
-        //     bool hit = Physics.Raycast(start, direction, out RaycastHit hitInfo, rayLength);
-        //
-        //     Gizmos.color = hit ? Color.red : Color.green;
-        //     Gizmos.DrawLine(start, end);
-        //
-        //     if (hit)
-        //     {
-        //         Gizmos.color = Color.yellow;
-        //         Gizmos.DrawSphere(hitInfo.point, 0.02f);
-        //     }
-        // }
     }
 }
 
