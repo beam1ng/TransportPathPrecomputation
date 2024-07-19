@@ -20,8 +20,8 @@ public struct SurfacePath
 
     private static float CalculateTimeDelay(List<SurfacePoint> surfacePoints)
     {
-        float speedOfLight = 343f;
-        return surfacePoints.PathLength() / speedOfLight;
+        float speedOfSound = 343f;
+        return surfacePoints.PathLength() / speedOfSound;
     }
 
     private static float[] CalculateContributions(List<SurfacePoint> surfacePoints, List<float> sampleFrequencies)
