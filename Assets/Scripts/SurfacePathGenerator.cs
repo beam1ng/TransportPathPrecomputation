@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -11,14 +10,9 @@ public class SurfacePathGenerator: MonoBehaviour
     public int maxPathCount;
     public float maxPathDistance;
     public int maxTriesPerPoint;
-
-    public List<float> sampleFrequencies =new ()
-    {
-        50f, 250f,450f,700f,1000f,1370f,1850f,2500f,3400f,4800f,7000f,10500f
-    };
     
     [SerializeField]
-    public List<SurfacePath> SurfacePaths = new();
+    public List<SurfacePath> surfacePaths = new();
     public bool drawPaths;
     public float pathSelectionInterval = 1f;
     
@@ -49,8 +43,6 @@ public class SurfacePathGenerator: MonoBehaviour
         }
 
         return false;
-
-        // return CustomRaycastManager.IsDestinationReachable(origin.positionWS, destination.positionWS, maxDistance);
     }
     
     private void GeneratePathsFromPoint(SurfacePoint originPoint)
@@ -74,7 +66,7 @@ public class SurfacePathGenerator: MonoBehaviour
             surfacePathPoints.Add(nextPoint);
             pathDistance += surfacePathPoints[^2].GetDistanceTo(surfacePathPoints[^1]);
             
-            SurfacePaths.Add(new SurfacePath(surfacePathPoints,sampleFrequencies));
+            surfacePaths.Add(new SurfacePath(surfacePathPoints,ReverbManager.SampleFrequencies));
             
         }
         
@@ -82,12 +74,12 @@ public class SurfacePathGenerator: MonoBehaviour
 
     private void ApplyPathCountLimit()
     {
-        SurfacePaths = SurfacePaths.OrderBy(_ => Random.value).Take(maxPathCount).ToList();
+        surfacePaths = surfacePaths.OrderBy(_ => Random.value).Take(maxPathCount).ToList();
     }
 
     public void GenerateSurfacePaths()
     {
-        SurfacePaths.Clear();
+        surfacePaths.Clear();
         surfacePointProvider = GetComponent<SurfacePointGenerator>();
         List<SurfacePoint> points = surfacePointProvider.GetSurfacePoints();
         for (int i = 0; i < points.Count; i++)
@@ -106,8 +98,8 @@ public class SurfacePathGenerator: MonoBehaviour
         {
             if (Time.time >= nextSelectionTime)
             {
-                int newPathIndex = Random.Range(0, SurfacePaths.Count / 10);
-                currentPath = SurfacePaths.OrderByDescending(s => s.surfacePoints.Count)
+                int newPathIndex = Random.Range(0, surfacePaths.Count / 10);
+                currentPath = surfacePaths.OrderByDescending(s => s.surfacePoints.Count)
                     .ElementAtOrDefault(newPathIndex);
                 nextSelectionTime = Time.time + pathSelectionInterval;
             }

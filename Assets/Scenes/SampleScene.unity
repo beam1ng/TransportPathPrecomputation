@@ -615,6 +615,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   impulseResponseTexture: {fileID: 8400000, guid: 5b23e59c380819d49a54b093a005563f, type: 2}
   impulseResponseMaterial: {fileID: 2100000, guid: 416bfdd78cf96294b9fccd3d5af3b794, type: 2}
+  timeSamples: 20
+  timeRange: 1
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -701,13 +703,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.085480854, y: -0.62844694, z: -0.020870326, w: 0.7728595}
+  m_LocalRotation: {x: 0.14494596, y: -0.6266232, z: 0.12010161, w: 0.7562471}
   m_LocalPosition: {x: -0.00000030301783, y: -0.96, z: -2.43}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 6.079, y: -78.662, z: -8.076}
+  m_LocalEulerAnglesHint: {x: 21.7, y: -79.29, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19789,19 +19791,6 @@ MonoBehaviour:
   maxPathCount: 10000
   maxPathDistance: 100
   maxTriesPerPoint: 50
-  sampleFrequencies:
-  - 50
-  - 250
-  - 450
-  - 700
-  - 1000
-  - 1370
-  - 1850
-  - 2500
-  - 3400
-  - 4800
-  - 7000
-  - 10500
   SurfacePaths:
   - surfacePoints:
     - positionWS: {x: 1.0615302, y: -12.352298, z: -7.3532}

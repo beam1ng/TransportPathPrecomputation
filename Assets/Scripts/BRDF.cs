@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class BRDF
 {
-        public static float SimpleLambertian(SurfacePoint originPoint, SurfacePoint impactPoint,
+        public static float SimpleSpecular(SurfacePoint originPoint, SurfacePoint impactPoint,
                 SurfacePoint destinationPoint, float frequency)
         {
                 Vector3 inDirection = (impactPoint.positionWS - originPoint.positionWS).normalized;
