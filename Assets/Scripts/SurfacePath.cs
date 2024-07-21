@@ -10,13 +10,22 @@ public unsafe struct CoreSurfacePathData
     public float timeDelay;
     public fixed float contributions[ReverbManager.SampleFrequenciesCount];
     public Vector3 inputPosition;
+    public Vector3 inputNormal;
+    public Vector3 inputPathDirection;
     public Vector3 outputPosition;
+    public Vector3 outputNormal;
+    public Vector3 outputPathDirection;
     
-    public CoreSurfacePathData(float[] contributions, float timeDelay, Vector3 inputPosition, Vector3 outputPosition)
+    
+    public CoreSurfacePathData(float[] contributions, float timeDelay, Vector3 inputPosition, Vector3 outputPosition,Vector3 inputNormal, Vector3 outputNormal, Vector3 inputPathDirection, Vector3 outputPathDirection)
     {
         this.timeDelay = timeDelay;
         this.inputPosition = inputPosition;
         this.outputPosition = outputPosition;
+        this.inputNormal = inputNormal;
+        this.outputNormal = outputNormal;
+        this.inputPathDirection = inputPathDirection;
+        this.outputPathDirection = outputPathDirection;
 
         for (int i = 0; i < ReverbManager.SampleFrequenciesCount; i++)
         {
@@ -24,7 +33,7 @@ public unsafe struct CoreSurfacePathData
         }
     }
     
-        public static int GetSize()=> sizeof(float) + ReverbManager.SampleFrequenciesCount * sizeof(float) + 3 * sizeof(float) + 3 * sizeof(float);
+        public static int GetSize()=> sizeof(float) + ReverbManager.SampleFrequenciesCount * sizeof(float) + 18 * sizeof(float);
 }
 
 [Serializable]
@@ -45,7 +54,9 @@ public struct SurfacePath
     public CoreSurfacePathData GetCoreData()
     {
         return new CoreSurfacePathData(this.contributions, this.timeDelay, this.surfacePoints[0].positionWS,
-            this.surfacePoints[^1].positionWS);
+            this.surfacePoints[^1].positionWS, this.surfacePoints[0].normalWS,this.surfacePoints[^1].normalWS,
+            Vector3.Normalize(this.surfacePoints[1].positionWS - this.surfacePoints[0].positionWS),
+            Vector3.Normalize(this.surfacePoints[^2].positionWS - this.surfacePoints[^1].positionWS));
     }
     
     private static float CalculateTimeDelay(List<SurfacePoint> surfacePoints)

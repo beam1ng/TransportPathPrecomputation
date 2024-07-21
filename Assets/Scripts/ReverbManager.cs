@@ -34,7 +34,12 @@ public class ReverbManager : MonoBehaviour
     private List<CoreSurfacePathData> surfacePaths;
 
     private ComputeBuffer argsBuffer;
-    private ComputeBuffer dataBuffer;
+    private GraphicsBuffer dataBuffer;
+
+    public void UpdateSurfacePaths(List<CoreSurfacePathData> newSurfacePaths)
+    {
+        this.surfacePaths = newSurfacePaths;
+    }
 
     private void Start()
     {
@@ -52,7 +57,7 @@ public class ReverbManager : MonoBehaviour
 
     private void DataBufferSetup()
     {
-        dataBuffer = new ComputeBuffer(surfacePaths.Count, CoreSurfacePathData.GetSize(), ComputeBufferType.Structured);
+        dataBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured,surfacePaths.Count,CoreSurfacePathData.GetSize());
         dataBuffer.SetData(surfacePaths);
     }
 
@@ -71,10 +76,10 @@ public class ReverbManager : MonoBehaviour
         cmd.SetGlobalInt("_TimeSamples", timeSamples);
         cmd.SetGlobalFloat("_TimeRange", timeRange);
         cmd.SetGlobalInt("_SampleFrequenciesCount", SampleFrequencies.Count);
-        cmd.SetGlobalBuffer("_PathData",dataBuffer);
         cmd.SetRenderTarget(impulseResponseTexture);
         cmd.ClearRenderTarget(false, true, Color.black);
-        cmd.DrawProceduralIndirect(Matrix4x4.identity, impulseResponseMaterial, 0, MeshTopology.Lines, argsBuffer);
+        cmd.SetGlobalBuffer("_SurfacePaths",dataBuffer);
+        cmd.DrawProceduralIndirect(Matrix4x4.identity,impulseResponseMaterial,0,MeshTopology.Lines,argsBuffer);
         Graphics.ExecuteCommandBuffer(cmd);
         cmd.Dispose();
     }

@@ -2,7 +2,7 @@ Shader "Unlit/ImpulseResponse"
 {
     SubShader
     {
-        Blend One Zero
+        Blend One One
         Cull Off
         ZTest Always
         ZWrite Off
@@ -27,23 +27,35 @@ Shader "Unlit/ImpulseResponse"
 
             struct v2f
             {
+                uint instanceID : TEXCOORD0;
+                float timeDelay : TEXCOORD1;
                 float4 vertexCS : SV_POSITION;
             };
 
+            struct PathData
+            {
+                float timeDelay;
+                float contributions[12];
+                float3 inputPosition;
+                float3 inputNormal;
+                float3 inputPathDir;
+                float3 outputPosition;
+                float3 outputNormal;
+                float3 outputPathDir;
+            };
+
+            float BRDF_Specular(float3 inDir, float3 norm, float3 outDir)
+            {
+                return dot(reflect(inDir,norm),outDir);
+            }
+            
             CBUFFER_START(UnityPerMaterial)
-                float4 _SharedBufferData;
+                float4 _ArgsBuffer;
             CBUFFER_END
 
-            // struct _PathData
-            // {
-            //     float timeDelay;
-            //     float contributions[12];
-            //     float3 inputPosition;
-            //     float3 outputPosition;
-            // };
-
+            StructuredBuffer<PathData> _SurfacePaths;
+            
             float3 _SourcePositionWS;
-
             float3 _ListenerPositionWS;
             int _TimeSamples;
             float _TimeRange;
@@ -53,18 +65,39 @@ Shader "Unlit/ImpulseResponse"
             {
                 v2f o;
 
-                float2 uv = float2(
-                    (v.instanceID + 0.5) / (float)_TimeSamples,
-                    v.vertexID);
-                    // (0.5 + v.vertexID * ((float)_SampleFrequenciesCount - 1.0 /(float)_SampleFrequenciesCount))/(float)_SampleFrequenciesCount);
+                PathData pathData = _SurfacePaths[v.instanceID];
 
+                float2 uv = float2(
+                    pathData.timeDelay / 0.5,
+                    v.vertexID);
+                
                 o.vertexCS = float4(uv * 2.0 - 1.0, 0, 1);
+                o.instanceID = v.instanceID;
                 return o;
             }
 
             half frag(v2f i) : SV_Target
             {
-                return 1;
+                PathData pathData = _SurfacePaths[i.instanceID];
+                float contribution = pathData.contributions[(i.vertexCS.y-0.499)/_SampleFrequenciesCount];
+                
+                contribution *= BRDF_Specular(
+                    normalize(_SourcePositionWS - pathData.inputPosition),
+                    pathData.inputNormal,
+                    pathData.inputPathDir);
+                
+                contribution *= BRDF_Specular(
+                    normalize(_ListenerPositionWS - pathData.outputPosition),
+                    pathData.outputNormal,
+                    pathData.outputPathDir);
+
+                float totalPathLength = pathData.timeDelay * 343.0;
+                totalPathLength += distance(_SourcePositionWS,pathData.inputPosition);
+                totalPathLength += distance(_ListenerPositionWS,pathData.outputPosition);
+
+                contribution /=(totalPathLength * totalPathLength);
+                
+                return  contribution * 100.0;
             }
             ENDHLSL
         }

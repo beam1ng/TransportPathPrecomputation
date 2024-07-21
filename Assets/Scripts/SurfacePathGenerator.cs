@@ -125,5 +125,10 @@ public class SurfacePathGeneratorEditor : Editor
         {
             generator.GenerateSurfacePaths();
         }
+        
+        if (GUILayout.Button("Update Reverb Manager Paths"))
+        {
+            FindObjectOfType<ReverbManager>().UpdateSurfacePaths(generator.surfacePaths.Select(sp=>sp.GetCoreData()).ToList());
+        }
     }
 }
